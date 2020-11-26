@@ -109,10 +109,29 @@ def _build_msg_struct(message):
     return msg
 
 
+# def log_message(message):
+#     msg = _build_msg_struct(message)
+#     logging.debug("ReportPortal - Log Message: {0}".format(message))
+#     RobotService.log(message=msg)
+
+
 def log_message(message):
-    msg = _build_msg_struct(message)
-    logging.debug("ReportPortal - Log Message: {0}".format(message))
-    RobotService.log(message=msg)
+    """Log message of current executing keyword.
+
+    This method sends each test log message to Report Portal.
+
+    Args:
+        message: current message passed from test by test executor.
+    """
+    black_list = ["check_completed",
+                  "'\"running\"==\"failed\" or \"running\"==\"success\"'",
+                  "Connection with ID default does not exist"]
+
+    if message.get('level', 'no') == 'FAIL' and not any(x in message['message'] for x in black_list):
+        message['message'] = "!!!MARKDOWN_MODE!!! **[FAIL]**\n```\n%s\n```" % message['message']
+        logging.debug("ReportPortal - Log Message: {0}".format(message))
+        msg = _build_msg_struct(message)
+        RobotService.log(message=msg)
 
 
 def log_message_with_image(msg, image):
