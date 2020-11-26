@@ -4,7 +4,7 @@ import string
 from robot.api import ResultVisitor
 from six.moves.urllib.parse import unquote
 
-from . import listener
+from . import listener_gp
 from .variables import _variables
 
 
@@ -29,7 +29,7 @@ class RobotResultsVisitor(ResultVisitor):
             'totaltests': getattr(suite.statistics, 'all', suite.statistics).total,
             'starttime': suite.starttime
         }
-        listener.start_suite(suite.name, attrs)
+        listener_gp.start_suite(suite.name, attrs)
 
     def end_suite(self, suite):
         attrs = {
@@ -48,7 +48,7 @@ class RobotResultsVisitor(ResultVisitor):
             'statistics': suite.statistics,
             'message': suite.message,
         }
-        listener.end_suite(None, attrs)
+        listener_gp.end_suite(None, attrs)
 
     def start_test(self, test):
         attrs = {
@@ -62,7 +62,7 @@ class RobotResultsVisitor(ResultVisitor):
             # 'lineno': test.lineno,
             'starttime': test.starttime,
         }
-        listener.start_test(test.name, attrs)
+        listener_gp.start_test(test.name, attrs)
 
     def end_test(self, test):
         attrs = {
@@ -80,7 +80,7 @@ class RobotResultsVisitor(ResultVisitor):
             'status': test.status,
             'message': test.message,
         }
-        listener.end_test(test.name, attrs)
+        listener_gp.end_test(test.name, attrs)
 
     def start_keyword(self, kw):
         attrs = {
@@ -93,7 +93,7 @@ class RobotResultsVisitor(ResultVisitor):
             'tags': kw.tags,
             'starttime': kw.starttime,
         }
-        listener.start_keyword(kw.name, attrs)
+        listener_gp.start_keyword(kw.name, attrs)
 
     def end_keyword(self, kw):
         attrs = {
@@ -109,7 +109,7 @@ class RobotResultsVisitor(ResultVisitor):
             'elapsedtime': kw.elapsedtime,
             'status': 'PASS' if kw.assign else kw.status,
         }
-        listener.end_keyword(kw.name, attrs)
+        listener_gp.end_keyword(kw.name, attrs)
 
     def start_message(self, msg):
         if msg.message:
@@ -120,11 +120,11 @@ class RobotResultsVisitor(ResultVisitor):
             try:
                 m = self.parse_message(message['message'])
                 message["message"] = m[0]
-                listener.log_message_with_image(message, m[1])
+                listener_gp.log_message_with_image(message, m[1])
             except (AttributeError, IOError):
                 # noinspection PyBroadException
                 try:
-                    listener.log_message(message)
+                    listener_gp.log_message(message)
                 except Exception:
                     pass
 
